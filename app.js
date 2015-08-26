@@ -11,6 +11,12 @@ app.set('view engine', 'jade');
 
 app.get('/', function (req, res) {
   var ip = req.ip;
+  var request = require('request');
+  request('freegeoip.net/json/' + ip, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      res.render('index', { address: body });
+    }
+  })
   res.render('index', { address: ip });
 })
 

@@ -10,7 +10,8 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'jade');
 
 app.get('/', function (req, res) {
-  res.render('index', {});
+  var ip = req.ip;
+  res.render('index', { address: ip });
 })
 
 var server = app.listen(process.env.PORT || 3000, function () {

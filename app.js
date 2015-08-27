@@ -2,27 +2,35 @@
  * @author Léo Unbekandt
  */
 
-var express = require('express')
-var app = express()
+ var express = require('express');
+ var app = express();
+ var request = require('request');
+ var func = require('./func.js');
 
-app.use(express.static(__dirname + '/public'));
+ app.use(express.static(__dirname + '/public'));
 
-app.set('view engine', 'jade');
+ app.set('view engine', 'jade');
 
-app.get('/', function (req, res) {
-  var ip = req.ip;
-  var request = require('request');
-  request('freegeoip.net/json/' + ip, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      res.render('index', { address: body });
-    }
-  })
-  res.render('index', { address: ip });
+ app.get('/', function (req, res) {
+ 	var ip = req.ip;
+
+
+ 	// Synced version avoids callback hell.
+ 	var sync = require("./gensync");
+	// If an `error` object is passed to resume it will throw an exception, so you probably want to try/catch around them!
+	sync(function*(resume) {
+		var loc = yield func.getLocationFromIP(ip, resume);
+		var weather = yield func.getWeatherForLocation(loc, resume);
+
+		res.render('index', {location: loc.city, temp: weather.current_observation.temp_c  })
+	});	
+
+	// res.render('index', { location: response.city });
 })
 
-var server = app.listen(process.env.PORT || 3000, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log('App listening at http://%s:%s', host, port)
-})
+ var server = app.listen(process.env.PORT || 3000, function () {
+ 	var host = server.address().address
+ 	var port = server.address().port
+ 	console.log('App listening at http://%s:%s', host, port)
+ })
 

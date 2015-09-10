@@ -34,11 +34,11 @@ app.get('/', function (req, res) {
 		} catch (error) {
 			console.log(error);
 		}
-		try {
-			var beer = yield func.getBeerInfo(beerId, resume);
-		} catch (error) {
-			console.log(error);
-		}
+		//try {
+		//	var beer = yield func.getBeerInfo(beerId, resume);
+		//} catch (error) {
+		//	console.log(error);
+		//}
 		console.log(beer);
 		console.log(beer.response.beer.brewery);
 

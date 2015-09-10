@@ -74,7 +74,7 @@ exports.searchMovie = function (queryString, year, callback) {
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
 	var type = "type=movie";
-	if year { var year = "y=" + year; } else { var year = ""; };
+	if (year) { var year = "y=" + year; } else { var year = ""; };
 	var query = 's=' + queryString.split(' ').join('+');
 
 	var preparedUrl = url + format + "&" + query + '&' + type + '&' + year;
@@ -134,8 +134,8 @@ exports.getSubtitle = function (movieQuery, language, callback) {
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			xmlParseString(body, function (err, result) {
-				if err {
-					callback(Error("Response body is not valid JSON: " + body), null);
+				if (err) {
+					callback(Error("Response body is not valid XML: " + body), null);
 					return;
 				} else {
 					callback(null, result);
@@ -158,7 +158,7 @@ exports.classifyText = function (text, callback) {
 		url:     apiUrl,
 		body:    payload
 	}, function(error, response, body){
-		if (!error && response.statusCode == 200 && response.statusCOde == 500) {
+		if (!error && response.statusCode == 200) {
 		try {
         		body = JSON.parse(body);
 			} catch (error) {
@@ -174,12 +174,67 @@ exports.classifyText = function (text, callback) {
 }
 
 exports.translateText = function (text, lang, callback) {
-	var apiUrl = "";
-	var clientSecret = "KkNUKyDwY1N9ZuEPqx5ADNq1ous849xfvdMDGt1gwHQ";
+	var apiUrl = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
+	var clientSecret = "uShdwP8Hj5/UAr3TyHbOGSaERFl30Z4zkKWSBBP3i58=";
+	var clientId = "92209877";
+	var scope = "http://api.microsofttranslator.com";
+	var grantType = "client_credentials";
+
+	var payload = 'grant_type=' + grantType + '&client_id=' + encodeURIComponent(clientId) + '&client_secret=' + encodeURIComponent(clientSecret) + '&scope=' + scope;
+
+	request.post({
+		headers: {'content-type' : 'application/x-www-form-urlencoded'},
+		url:     apiUrl,
+		body:    payload
+	}, function(error, response, body){
+		if (!error && response.statusCode == 200) {
+			try {
+		    		body = JSON.parse(body);
+			} catch (error) {
+					callback(Error("Response body is not valid JSON: " + body), null);
+				return;
+			}
+			callback(null, body);
+		} else {
+			callback(Error(body.message), body);
+		}
+	});
 }
 
+// translate(token, "My name is Roger", "en", "no", function (error, data) {
+// 	if (error) {
+// 		console.log(error);
+// 	} else {
+// 		console.log(data);
+// 	}
+// });
+var translate = function (token, text, from, to, callback) {
+	var uri = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + encodeURIComponent(text) + "&from=" + from + "&to=" + to;
+	var authToken = "Bearer" + " " + token.access_token;
 
+	var options = {
+		url: uri,
+		headers: {
+		'Authorization': authToken
+		}
+	};
 
+	request( options, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			xmlParseString(body, function (err, result) {
+				if (err) {
+					callback(Error("Response body is not valid XML: " + body), null);
+					return;
+				} else {
+					var translation = result.string._;
+					callback(null, translation);
+				}
+			});
+		} else {
+			callback(Error(body.message), body);
+		}
+	});	
+}
 
 
 

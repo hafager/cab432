@@ -1,2 +1,12 @@
 extends layout
 
+block body
+	.row
+		.col-md-1
+		.col-md-10
+			.row
+				.col-md-6.text-center
+					img(src='#{movie.Poster}', alt='Poster for #{movie.Title}', href='#{movie.Poster}', name='#{movie.Title}')
+				.col-md-6
+					h1= movie.Title
+					h2= 'Rating: ' + movie.imdbRating

@@ -2,9 +2,6 @@ extends layout
 
 block body
 	.row
-		a(style="margin-top:1rem;text-decoration:none", href="#{image}")
-			object(style="height:40px", type="image/svg+xml",data="img/IMDb_logo.svg")
-		br
 		include partials/_search
 		br
 	.row
@@ -17,4 +14,6 @@ block body
 								a(href='movie/#{movie.imdbID}', name='#{movie.imdbID}')= movie.Title
 		if movieId
 			h1 movieId
+		if movieArray
+			h1= movieArray
 			

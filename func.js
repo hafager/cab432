@@ -50,6 +50,7 @@ exports.getMovieInfo = function (movieId, callback) {
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
 	var plot = "plot=long";
+	var movieId = movieId;
 	var movie = 'i=' + movieId.split(' ').join('+');
 
 	// https://www.omdbapi.com/?r=json&plot=long&i={movie_id}

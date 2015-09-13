@@ -7,9 +7,12 @@ var app = express();
 var request = require('request');
 var func = require('./func.js');
 var bodyParser = require("body-parser");
+var async = require('async');
+
+//app.use(express.static('public'));
+app.use('/static', express.static('public'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(__dirname + '/public'));
 
 app.set('view engine', 'jade');
 
@@ -70,9 +73,26 @@ app.post('/', function (req, res) {
 
 	try {
 		func.searchMovie (movieSearch, year, function (error, body) {
-			console.log(body.Search)
+			res.locals.movieArray = [];
+			var movieList = body.Search;
+
+			for (var movie in movieList) {
+				console.log(movieList[movie].Title);
+				func.getMovieInfo(movieList[movie].imdbID, function (err, data) {
+					func.classifyText(data.Plot, function (err, data) {
+						console.log(data)
+					})
+					res.locals.movieArray.push(data)
+				});
+			}
+			console.log(res.locals.movieArray);
 			res.render('index', {location: 'Sidney', temp: '37', movies: body});
-		})
+
+			
+
+			console.log(body.Search)
+			//res.render('index', {location: 'Sidney', temp: '37', movies: body});
+		});
 	} catch (error) {
 		res.render('index', {location: 'Sidney', temp: '37', movies: error});
 	}
@@ -81,13 +101,20 @@ app.post('/', function (req, res) {
 
 app.get('/test', function (req, res) {
 	console.log('test');
+
 	res.render('index');
 });
 
 app.get('/movie/:imdbId', function (req, res) {
 	console.log(req);
 	var id = req.params.imdbId
-	res.render('index', {movieId: id})
+	func.getMovieInfo(id, function (err, data) {
+		if (err) {
+			res.status(404).send('Not found');
+		} else {
+			res.render('movie', {movie: data})
+		}
+	});
 })
 
 

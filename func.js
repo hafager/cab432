@@ -1,14 +1,16 @@
 var request = require('request');
 var xmlParseString = require('xml2js').parseString;
 
-exports.getLocationFromIP = function (ip, callback) {
-	var url = 'http://freegeoip.net/';
 
-	console.log("Requesting location for " + ip);
-	// http://ip-api.com/json/#{ip}
-	// http://freegeoip.net/json/{ip}
-	// request( url + ip, function (error, response, body) {
-	request('http://ip-api.com/json/#131.181.251.131', function (error, response, body) {
+/**
+* Queries the API "http://ip-api.com/json/#" for location of the client from IP
+* Example: "http://ip-api.com/json/#131.181.251.131"
+* @params {object} location - A location
+*/
+exports.getLocationFromIP = function (ip, callback) {
+	var url = 'http://ip-api.com/json/#';
+
+	request( url + ip, function (error, response, body) {
     if (!error && response.statusCode == 200) {
     	try {
         	body = JSON.parse(body);
@@ -23,13 +25,16 @@ exports.getLocationFromIP = function (ip, callback) {
   });
 }
 
+/**
+* Queries the API "http://api.wunderground.com/api/4b52aa55f2243ff8/conditions/q/" for information about the weather at the location
+* Example: "https://www.omdbapi.com/?t=death+proof&y=&plot=long&r=json&type=movie"
+* @params {object} location - A location
+*/
 exports.getWeatherForLocation = function (location, callback) {
 	var country_code = location.countryCode;
 	var city = location.city;
 	var url = 'http://api.wunderground.com/api/4b52aa55f2243ff8/conditions/q/';
 
-	console.log("Requesting weather information for " + city);
-	// http://api.wunderground.com/api/4b52aa55f2243ff8/conditions/q/{country_code}/{city}.json
 	request( url + country_code + '/' + city + '.json', function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -45,18 +50,20 @@ exports.getWeatherForLocation = function (location, callback) {
 	});
 }
 
+/**
+* Queries the API https://www.omdbapi.com/ for information about the provided movie
+* Example: "https://www.omdbapi.com/?t=death+proof&y=&plot=long&r=json&type=movie"
+* @params {string} movieId - The id of the movie
+*/
 exports.getMovieInfo = function (movieId, callback) {
-	// "https://www.omdbapi.com/?t=death+proof&y=&plot=long&r=json&type=movie"
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
 	var plot = "plot=long";
 	var movieId = movieId;
 	var movie = 'i=' + movieId.split(' ').join('+');
 
-	// https://www.omdbapi.com/?r=json&plot=long&i={movie_id}
 	var preparedUrl = url + format + "&" + plot + "&" + movie;
 	
-	console.log("Requesting information for " + movie);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -72,6 +79,11 @@ exports.getMovieInfo = function (movieId, callback) {
 	});
 }
 
+/**
+* Queries the API https://www.omdbapi.com/ for movies with the keyword(s)
+* @params {string} queryString - The string of the query
+* @params {string} year - Optional. Year of the movie
+*/
 exports.searchMovie = function (queryString, year, callback) {
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
@@ -81,7 +93,6 @@ exports.searchMovie = function (queryString, year, callback) {
 
 	var preparedUrl = url + format + "&" + query + '&' + type + '&' + year;
 
-	console.log("Searching for: " + queryString);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -98,18 +109,19 @@ exports.searchMovie = function (queryString, year, callback) {
 
 }
 
+/**
+* Queries the API https://api.untappd.com/v4/beer/info/ with the beer ID to get info about the beer
+* Examle: https://api.untappd.com/v4/beer/info/467563?client_id=079890CF6A35244916A8774BC0CB33230B852BD5&client_secret=44E33A2D1CD33F5606E362932FAE66F1EEEF697C&compact=true"
+* @params {string} beerId - The string of the query
+*/
 exports.getBeerInfo = function (beerId, callback) {
-	// "https://api.untappd.com/v4/beer/info/467563?client_id=079890CF6A35244916A8774BC0CB33230B852BD5&client_secret=44E33A2D1CD33F5606E362932FAE66F1EEEF697C&compact=true"
 	var url = "https://api.untappd.com/v4/beer/info/";
 	var clientId = "client_id=079890CF6A35244916A8774BC0CB33230B852BD5";
 	var clientSecret = "client_secret=44E33A2D1CD33F5606E362932FAE66F1EEEF697C";
-	// "compact=false" will give a much richer json response
-	var compact = "brewery=true";
+	var compact = "compact=false";
 
 	var preparedUrl = url + beerId + "?" + clientId + "&" + clientSecret + "&" + compact;
-	console.log(preparedUrl);
 
-	console.log("Requesting beer information for " + beerId);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -125,8 +137,13 @@ exports.getBeerInfo = function (beerId, callback) {
 	});	
 }
 
+/**
+* Queries the API http://subsmax.com/api/10/ for subtitles for a movie in the selected language
+* Example: "http://subsmax.com/api/10/the-dark-knight-en"
+* @params {string} movieQuery - The name of the movie
+* @params {string} language - The language, country or language code for the chosen language
+*/
 exports.getSubtitle = function (movieQuery, language, callback) {
-	// http://subsmax.com/api/10/the-dark-knight-en
 	var url = "http://subsmax.com/api/10/";
 	var movie = movieQuery.split(' ').join('-');
 
@@ -149,8 +166,11 @@ exports.getSubtitle = function (movieQuery, language, callback) {
 	});	
 }
 
-
-//Returns a json of the form: {"result": {"confidence": "99.9920", "sentiment": "Positive"} }
+/**
+* Queries the API http://sentiment.vivekn.com/api/text/ with a text to get a sentiment analysis of the text
+* @params {string} text - The text to be analysed
+* Returns a json of the form: {"result": {"confidence": "99.9920", "sentiment": "Positive"} }
+*/
 exports.classifyText = function (text, callback) {
 	var apiUrl = "http://sentiment.vivekn.com/api/text/";
 	var payload = 'txt="' + text + '"';
@@ -175,7 +195,12 @@ exports.classifyText = function (text, callback) {
 
 }
 
-exports.translateText = function (text, lang, callback) {
+/**
+* Queries the API https://datamarket.accesscontrol.windows.net/v2/OAuth2-13 for a token to be able to use the translator API.
+* The token is valid for 600 seconds.
+* The parameter token.access_token has to be sent with the translate query.
+*/
+exports.getTranslatorToken = function (callback) {
 	var apiUrl = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
 	var clientSecret = "uShdwP8Hj5/UAr3TyHbOGSaERFl30Z4zkKWSBBP3i58=";
 	var clientId = "92209877";
@@ -203,14 +228,14 @@ exports.translateText = function (text, lang, callback) {
 	});
 }
 
-// translate(token, "My name is Roger", "en", "no", function (error, data) {
-// 	if (error) {
-// 		console.log(error);
-// 	} else {
-// 		console.log(data);
-// 	}
-// });
-var translate = function (token, text, from, to, callback) {
+/**
+* Queries the API http://api.microsofttranslator.com/v2/Http.svc/Translate? for translations from one language to another
+* @params {object} token - The token which is needed to acces the API.
+* @params {string} text - The text which will be translated
+* @params {string} from - The original language of the text
+* @params {string} to - The language the text will be translated into
+*/
+exports.translate = function (token, text, from, to, callback) {
 	var uri = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + encodeURIComponent(text) + "&from=" + from + "&to=" + to;
 	var authToken = "Bearer" + " " + token.access_token;
 

@@ -1,4 +1,7 @@
 extends layout
+block head
+	script(type='text/javascript').
+		var moviePlot =!{JSON.stringify(movie.Plot)};
 
 block body
 	.row
@@ -10,3 +13,13 @@ block body
 				.col-md-6
 					h1= movie.Title
 					h2= 'Rating: ' + movie.imdbRating
+			.row
+				.movie-info
+					select#langDropdown.btn-lg
+						each langCode, lang in langs
+							option(value="#{lang}")= lang
+
+			.row
+				p#plot= movie.Plot
+
+

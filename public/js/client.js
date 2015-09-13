@@ -1,37 +1,36 @@
+var language = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'zh-CHS', 'Japanese': 'ja', 'Swedish': 'sv', 'Danish': 'da', 'Russian': 'ru' }
+
 
 $(document).ready(function() {
+	var currentLang = language['English'];
+	var cookie = document.cookie;
+	var authToken = cookie.substring(6, cookie.length);
+	
+	$("#langDropdown").change(function () {
+    	translate(authToken, moviePlot, currentLang, language[$("#langDropdown").val()], function (data) {
 
-    // process the form
-    $('search-form').submit(function(event) {
-    	console.log("JQURY AJAX POST")
+    			$('#plot').text(data.substring(1,data.length - 1));
+    			currentLang = language[$("#langDropdown").val()];
+    	});
 
-        // get the form data
-        // there are many ways to get this data using jQuery (you can use the class or id also)
-        var formData = {
-            'movieSearch'              : $('input[name=movieSearch]').val(),
-            'subtitle'             : $('input[name=subtitle]').val()
-        };
-
-        // process the form
-        $.ajax({
-            type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url         : '/', // the url where we want to POST
-            data        : formData, // our data object
-            dataType    : 'json', // what type of data do we expect back from the server
-                        encode          : true
-        })
-            // using the done promise callback
-            .done(function(data) {
-
-                // log data to the console so we can see
-                console.log(data); 
-                console.log("JQUERY AJAX");
-
-                // here we will handle errors and validation messages
-            });
-
-        // stop the form from submitting the normal way and refreshing the page
-        event.preventDefault();
+				
     });
 
 });
+
+
+var translate = function (token, text, from, to, callback) {
+	var url = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId=Bearer " + token + "&from=" + from + "&to=" + to + "&text=" + text;
+
+	$.ajax({
+		type: 'GET',
+		url: url,
+		error: function(error) {
+			console.log(error);
+			callback('Please refresh this page');
+		},
+		success: function(xml_results) {
+			callback(xml_results);
+		}
+	});
+};

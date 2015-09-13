@@ -1,5 +1,5 @@
 /**
- * @author Léo Unbekandt
+ * @author Haavard Magne Fagervoll
  */
 
 var express = require('express');
@@ -8,23 +8,31 @@ var request = require('request');
 var func = require('./func.js');
 var bodyParser = require("body-parser");
 var async = require('async');
+var morgan = require('morgan');
 
 //app.use(express.static('public'));
 app.use('/static', express.static('public'));
+app.use(morgan('dev'));
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.set('view engine', 'jade');
 
 app.param('imdbId', function(req, res, next, imdbId) {
-	console.log(req.params)
 	if (imdbId.length === 9 && imdbId[0] === 't' && imdbId[1] === 't') {
 		req.imdbId = imdbId; 
 		console.log('next');
 		next();
 	}
-	console.log('fail')
 });
+
+app.param('txt', function(req, res, next, txt) {
+	req.txt = txt;
+	next();
+});
+
+app.locals.languages = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'ch', 'Japanese': 'jp', 'Swedish': 'swe', 'Danish': 'dk' }
 
 app.get('/', function (req, res) {
 	var ip = req.ip;
@@ -59,7 +67,7 @@ app.get('/', function (req, res) {
 
 
 		// res.render('index', {location: loc.city, temp: weather.current_observation.temp_c, director: movie.Director, rating: movie.imdbRating  })
-		res.render('index', {location: 'Brisbane', temp: '39' })
+		res.render('index')
 	});	
 
 	// res.render('index', { location: response.city });
@@ -112,9 +120,35 @@ app.get('/movie/:imdbId', function (req, res) {
 		if (err) {
 			res.status(404).send('Not found');
 		} else {
-			res.render('movie', {movie: data})
+			func.getTranslatorToken( function (err, token) {
+				
+				if (err) {
+					res.status(500).send('Internal server error');
+				} else {
+					var auth = token.access_token;
+					res.cookie('token', auth, { maxAge: 600000, httpOnly: false })
+					res.render('movie', {movie: data, langs: app.locals.languages});
+				};
+			});
 		}
 	});
+})
+
+app.get('/translate/:txt', function (req, res) {
+	var txt = req.params.txt.split('+').join(' ');
+
+	func.getTranslatorToken(function (err, token) {
+
+		func.translate(token, txt, 'en', 'no', function (err, data) {
+
+			res.send(data);
+		});
+	});
+	
+});
+
+app.get('*',function (req, res) {
+	res.redirect('/');
 })
 
 

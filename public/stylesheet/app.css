@@ -1,6 +1,12 @@
 .background {
 	background-image: url("../img/background.jpg");
 	background-color: black;
+
+	-webkit-filter: grayscale(0.3) sepia(0.3);
+	-moz-filter: grayscale(0.3) sepia(0.3);
+	-o-filter: grayscale(0.3) sepia(0.3);
+	-ms-filter: grayscale(0.3) sepia(0.3);
+	filter: grayscale(0.3) sepia(0.3);
 }
 
 .head {
@@ -50,9 +56,19 @@
 }
 
 .app-background { 
-  background: url(images/bg.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+	background: url(images/bg.jpg) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+
+	-webkit-filter: grayscale(0.3) sepia(0.3);
+	-moz-filter: grayscale(0.3) sepia(0.3);
+	-o-filter: grayscale(0.3) sepia(0.3);
+	-ms-filter: grayscale(0.3) sepia(0.3);
+	filter: grayscale(0.3) sepia(0.3);
+}
+
+.movie-info {
+	padding-top: 200px;
 }

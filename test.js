@@ -4,8 +4,49 @@ var func = require('./func.js')
 
 var async = require('async');
 
-
-
+ 
+var testMovies = [{ Title: 'Hollywood Hulk Hogan: Hulk Still Rules',
+    Year: '2002',
+    Rated: 'N/A',
+    Released: 'N/A',
+    Runtime: 'N/A',
+    Genre: 'Documentary, Action',
+    Director: 'N/A',
+    Writer: 'N/A',
+    Actors: 'Hulk Hogan, Freddie Blassie, Gerald Brisco, Pat Patterson',
+    Plot: 'N/A',
+    Language: 'English',
+    Country: 'USA',
+    Awards: 'N/A',
+    Poster: 'N/A',
+    Metascore: 'N/A',
+    imdbRating: '7.9',
+    imdbVotes: '146',
+    imdbID: 'tt0365349',
+    Type: 'movie',
+    Response: 'True',
+    Sentiment: { confidence: '50.0000', sentiment: 'Neutral' } },
+  { Title: 'Hulk Hogan: The Ultimate Anthology',
+    Year: '2006',
+    Rated: 'N/A',
+    Released: 'N/A',
+    Runtime: '606 min',
+    Genre: 'Sport',
+    Director: 'N/A',
+    Writer: 'N/A',
+    Actors: 'Adnan Al-Kaissy, Lou Albano, Muhammad Ali, André the Giant',
+    Plot: 'N/A',
+    Language: 'English',
+    Country: 'USA',
+    Awards: 'N/A',
+    Poster: 'N/A',
+    Metascore: 'N/A',
+    imdbRating: '7.3',
+    imdbVotes: '134',
+    imdbID: 'tt1045621',
+    Type: 'movie',
+    Response: 'True',
+    Sentiment: { confidence: '50.0000', sentiment: 'Neutral' } } ]
 
 
 
@@ -164,7 +205,36 @@ var translate = function (token, text, from, to, callback) {
 			callback(Error(body.message), body);
 		}
 	});	
-
-
 }
+
+
+var alt = [];
+
+function en(callback) {
+	callback("en");
+}
+function to(callback) {
+	callback("to");
+}
+function tre(callback) {
+	callback("tre");
+}
+
+function resultat(err, data) {
+	console.log(data)
+}
+
+
+
+async.parallel([en(), to(), tre()], resultat);
+
+
+
+
+
+
+
+
+
+
 

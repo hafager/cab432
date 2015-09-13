@@ -8,10 +8,12 @@ block body
 		if movies
 			table.table
 				thead
-					each movie in movies.Search
+					each movie in movies
 						tr
 							td
 								a(href='movie/#{movie.imdbID}', name='#{movie.imdbID}')= movie.Title
+							td
+								= movie.Sentiment.sentiment
 		if movieId
 			h1 movieId
 		if movieArray

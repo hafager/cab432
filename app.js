@@ -34,42 +34,7 @@ app.param('txt', function(req, res, next, txt) {
 app.locals.languages = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'ch', 'Japanese': 'jp', 'Swedish': 'swe', 'Danish': 'dk' }
 
 app.get('/', function (req, res) {
-	var ip = req.ip;
-	var movieSearch = "the dark knight";
-	var beerId = "17102";
-
-	//func.getMovieInfo(movieSearch, function (error, data) {
-	//	console.log(data);
-	//});
-
-	// Synced version avoids callback hell.
-	var sync = require("./gensync");
-	// If an `error` object is passed to resume it will throw an exception, so you probably want to try/catch around them!
-	sync(function*(resume) {
-		// try {
-		// 	var loc = yield func.getLocationFromIP(ip, resume);
-		// } catch (error) {
-		// 	console.log(error);
-		// }
-		// try {
-		// 	var weather = yield func.getWeatherForLocation(loc, resume);
-		// } catch (error) {
-		// 	console.log(error);
-		// }
-		//try {
-		//	var beer = yield func.getBeerInfo(beerId, resume);
-		//} catch (error) {
-		//	console.log(error);
-		//}
-		//console.log(beer);
-		//console.log(beer.response.beer.brewery);
-
-
-		// res.render('index', {location: loc.city, temp: weather.current_observation.temp_c, director: movie.Director, rating: movie.imdbRating  })
-		res.render('index')
-	});	
-
-	// res.render('index', { location: response.city });
+	res.render('index')
 })
 
 app.post('/', function (req, res) {
@@ -77,42 +42,26 @@ app.post('/', function (req, res) {
 	
 	try { var year = req.body.year } catch (error) { var year = null};
 
-	try {
-		func.searchMovie (movieSearch, year, function (error, body) {
-			res.locals.movieArray = [];
-			var movieList = body.Search;
+	var sync = require("./gensync");
+	sync(function*(resume) {
+		try {
+			var movieList = yield func.searchMovie(movieSearch, year, resume);
+		} catch (error) {
+			console.log(error);
+		}
+		try {
+			var result = yield async.map(movieList.Search, func.getMovieInfo, resume);
+		} catch (error) {
+			console.log(error)
+		}
+		try {
+			var movies = yield async.map(result, func.classifyText, resume);
+		} catch (error) {
+			console.log(error);
+		}
 
-			var sync = require("./gensync");
-			sync(function*(resume) {
-				try {
-					var result = yield async.map(movieList, func.getMovieInfo, resume);
-				} catch (error) {
-					console.log(error)
-				}
-				try {
-					var allMovies = yield async.map(result, func.classifyText, resume);
-				} catch (error) {
-					console.log(error);
-				}
-				console.log(allMovies);
-			});
-
-			for (var movie in movieList) {
-				func.getMovieInfo(movieList[movie], function (err, data) {
-					func.classifyText(data, function (err, data) {
-					})
-					res.locals.movieArray.push(data)
-				});
-			}
-			res.render('index', {location: 'Sidney', temp: '37', movies: body});
-
-			
-
-			//res.render('index', {location: 'Sidney', temp: '37', movies: body});
-		});
-	} catch (error) {
-		res.render('index', {location: 'Sidney', temp: '37', movies: error});
-	}
+		res.render('index', { movies: movies });
+	})
 });
 
 

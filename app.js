@@ -22,7 +22,6 @@ app.set('view engine', 'jade');
 app.param('imdbId', function(req, res, next, imdbId) {
 	if (imdbId.length === 9 && imdbId[0] === 't' && imdbId[1] === 't') {
 		req.imdbId = imdbId; 
-		console.log('next');
 		next();
 	}
 });
@@ -74,7 +73,6 @@ app.get('/', function (req, res) {
 })
 
 app.post('/', function (req, res) {
-	console.log(req.body);
 	var movieSearch = req.body.movieSearch;
 	
 	try { var year = req.body.year } catch (error) { var year = null};
@@ -84,44 +82,47 @@ app.post('/', function (req, res) {
 			res.locals.movieArray = [];
 			var movieList = body.Search;
 
+			var sync = require("./gensync");
+			sync(function*(resume) {
+				try {
+					var result = yield async.map(movieList, func.getMovieInfo, resume);
+				} catch (error) {
+					console.log(error)
+				}
+				try {
+					var allMovies = yield async.map(result, func.classifyText, resume);
+				} catch (error) {
+					console.log(error);
+				}
+				console.log(allMovies);
+			});
+
 			for (var movie in movieList) {
-				console.log(movieList[movie].Title);
-				func.getMovieInfo(movieList[movie].imdbID, function (err, data) {
-					func.classifyText(data.Plot, function (err, data) {
-						console.log(data)
+				func.getMovieInfo(movieList[movie], function (err, data) {
+					func.classifyText(data, function (err, data) {
 					})
 					res.locals.movieArray.push(data)
 				});
 			}
-			console.log(res.locals.movieArray);
 			res.render('index', {location: 'Sidney', temp: '37', movies: body});
 
 			
 
-			console.log(body.Search)
 			//res.render('index', {location: 'Sidney', temp: '37', movies: body});
 		});
 	} catch (error) {
 		res.render('index', {location: 'Sidney', temp: '37', movies: error});
 	}
-	
 });
 
-app.get('/test', function (req, res) {
-	console.log('test');
-
-	res.render('index');
-});
 
 app.get('/movie/:imdbId', function (req, res) {
-	console.log(req);
 	var id = req.params.imdbId
 	func.getMovieInfo(id, function (err, data) {
 		if (err) {
 			res.status(404).send('Not found');
 		} else {
 			func.getTranslatorToken( function (err, token) {
-				
 				if (err) {
 					res.status(500).send('Internal server error');
 				} else {
@@ -136,11 +137,8 @@ app.get('/movie/:imdbId', function (req, res) {
 
 app.get('/translate/:txt', function (req, res) {
 	var txt = req.params.txt.split('+').join(' ');
-
 	func.getTranslatorToken(function (err, token) {
-
 		func.translate(token, txt, 'en', 'no', function (err, data) {
-
 			res.send(data);
 		});
 	});

@@ -2,6 +2,12 @@ var request = require('request');
 var xmlParseString = require('xml2js').parseString;
 var func = require('./func.js')
 
+var async = require('async');
+
+
+
+
+
 
 var movies = [ { Title: 'The Incredible Hulk',
     Year: '2008',
@@ -39,10 +45,32 @@ var movies = [ { Title: 'The Incredible Hulk',
     Year: '2002',
     imdbID: 'tt0365349',
     Type: 'movie' },
-  { Title: 'Hulk Hogan: The Ultimate Anthology',
-    Year: '2006',
-    imdbID: 'tt1045621',
-    Type: 'movie' } ];
+  { Title: 'Hulk Hogan: The Ultimate Anthology', Year: '2006', imdbID: 'tt1045621', Type: 'movie' } ];
+
+console.log(movies);
+
+var square = function (num, doneCallback) {
+  // Call back with no error and the result of num * num
+  
+  return doneCallback(null, num.imdbID);
+};
+
+// Square each number in the array [1, 2, 3, 4]
+async.map(movies, square, function (err, results) {
+  // Square has been called on each of the numbers
+  // so we're now done!
+  console.log("Finished!");
+  console.log(results);
+});
+
+// Square each number in the array [1, 2, 3, 4]
+async.each([1, 2, 3, 4], square, function (err) {
+  // Square has been called on each of the numbers
+  // so we're now done!
+  console.log("Finished!");
+});
+
+
 function movieInfo(movieList, callback) {
 	var allMovies = []
 	for (var movie in movieList) {
@@ -59,10 +87,10 @@ function movieInfo(movieList, callback) {
 	callback(allMovies);
 	//console.log(allMovies);
 }
-console.log(movies[0].imdbID);
-movieInfo(movies, function (allMovies) {
-	console.log(allMovies);
-});
+//console.log(movies[0].imdbID);
+//movieInfo(movies, function (allMovies) {
+//	console.log(allMovies);
+//});
 
 
 var translate = function (txt, callback) {

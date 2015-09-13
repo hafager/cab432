@@ -56,6 +56,10 @@ exports.getWeatherForLocation = function (location, callback) {
 * @params {string} movieId - The id of the movie
 */
 exports.getMovieInfo = function (movieId, callback) {
+	if (movieId.length !== 9) {
+		movieId = movieId.imdbID;
+	}
+
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
 	var plot = "plot=long";
@@ -171,7 +175,8 @@ exports.getSubtitle = function (movieQuery, language, callback) {
 * @params {string} text - The text to be analysed
 * Returns a json of the form: {"result": {"confidence": "99.9920", "sentiment": "Positive"} }
 */
-exports.classifyText = function (text, callback) {
+exports.classifyText = function (movie, callback) {
+	var text = movie.Plot;
 	var apiUrl = "http://sentiment.vivekn.com/api/text/";
 	var payload = 'txt="' + text + '"';
 
@@ -187,7 +192,9 @@ exports.classifyText = function (text, callback) {
 				callback(Error("Response body is not valid JSON: " + body), null);
 			return;
 			}
-			callback(null, body);
+			
+			movie['Sentiment'] = body.result;
+			callback(null, movie);
 		} else {
 			callback(Error(body.message), body);
 		}

@@ -8,13 +8,15 @@ var request = require('request');
 var func = require('./func.js');
 var bodyParser = require("body-parser");
 var async = require('async');
-var morgan = require('morgan');
 
-console.log(__dirname + '/logs/morgan.log');
-app.use(morgan('common', { skip: function(req, res) { return res.statusCode < 400 }, stream: __dirname + '/logs/morgan.log' }));
 app.use('/static', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('view engine', 'jade');
+
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 app.param('imdbId', function(req, res, next, imdbId) {
 	if (imdbId.length === 9 && imdbId[0] === 't' && imdbId[1] === 't') {
@@ -33,6 +35,8 @@ app.get('/', function (req, res) {
 /**
 * Makes the movie search and queries movieinfo, subtitle and sentiment APPI.
 * @todo Make subtitle- and sentiment API call asynchronous
+* @todo Make the table of movies look nicer
+* @todo Make the subtitle language dropdown update the subtitles if a search already has been done. And make it stick to the language you have chosen.
 */
 app.post('/', function (req, res) {
 	var movieSearch = req.body.movieSearch;
@@ -46,12 +50,13 @@ app.post('/', function (req, res) {
 			var movieList = yield func.searchMovie(movieSearch, year, resume);
 
 		} catch (error) {
-			console.log(error);
+			console.error(error.stack);
 		}
 		try {
 			var result = yield async.map(movieList.Search, func.getMovieInfo, resume);
 		} catch (error) {
-			console.log(error)
+			console.error(error.stack);
+
 		}
 		for (var item in result) {
 			result[item].SelectedLanguage = selectedLanguage;
@@ -60,26 +65,31 @@ app.post('/', function (req, res) {
 
 			var subtitles = yield async.map(result, func.getSubtitle, resume);
 		} catch (error) {
-			console.log(error);
+			console.error(error.stack);
 		}
 		try {
 			var movies = yield async.map(subtitles, func.classifyText, resume);
 		} catch (error) {
-			console.log(error);
+			console.error(error.stack);
 		}
-		res.render('index', { movies: movies });
+		res.render('index', { movies: movies, selectedLanguage: selectedLanguage });
 	})
 });
 
-
+/**
+* Renders the view for movie information
+* @todo Show the result of the sentimental analysis of the movie
+*/
 app.get('/movie/:imdbId', function (req, res) {
 	var id = req.params.imdbId
 	func.getMovieInfo(id, function (err, data) {
 		if (err) {
+			console.error(err.stack);
 			res.status(404).send('Not found');
 		} else {
 			func.getTranslatorToken( function (err, token) {
 				if (err) {
+					console.error(err.stack);
 					res.status(500).send('Internal server error');
 				} else {
 					var auth = token.access_token;

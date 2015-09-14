@@ -32,7 +32,13 @@ $(document).ready(function() {
 
 });
 
-
+/**
+* Translates a given text, using the token received from the server
+* @params {string} token - The token received from the server.
+* @params {string} text - The text to be translated.
+* @params {string} from - The language which the text will be translated from.
+* @params {string} to - The language which the text will be translated into.
+*/
 var translate = function (token, text, from, to, callback) {
 	var url = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId=Bearer " + token + "&from=" + from + "&to=" + to + "&text=" + text;
 

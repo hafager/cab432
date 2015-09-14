@@ -1,4 +1,4 @@
-var language = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'zh-CHS', 'Japanese': 'ja', 'Swedish': 'sv', 'Danish': 'da', 'Russian': 'ru' }
+var language = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'zh-CHS', 'Japanese': 'ja', 'Swedish': 'sv', 'Danish': 'da', 'Russian': 'ru', 'French': 'fr', 'German': 'de', 'Dutch': 'nl' }
 
 
 $(document).ready(function() {

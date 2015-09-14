@@ -37,6 +37,7 @@ app.get('/', function (req, res) {
 * @todo Make subtitle- and sentiment API call asynchronous
 * @todo Make the table of movies look nicer
 * @todo Make the subtitle language dropdown update the subtitles if a search already has been done. And make it stick to the language you have chosen.
+* @todo Adds some text explaining that it couldn't find any movies whe the search result is empty
 */
 app.post('/', function (req, res) {
 	var movieSearch = req.body.movieSearch;

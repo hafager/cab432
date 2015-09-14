@@ -10,27 +10,21 @@ var bodyParser = require("body-parser");
 var async = require('async');
 var morgan = require('morgan');
 
+console.log(__dirname + '/logs/morgan.log');
+app.use(morgan('common', { skip: function(req, res) { return res.statusCode < 400 }, stream: __dirname + '/logs/morgan.log' }));
 app.use('/static', express.static('public'));
-app.use(morgan('dev'));
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.set('view engine', 'jade');
 
 app.param('imdbId', function(req, res, next, imdbId) {
 	if (imdbId.length === 9 && imdbId[0] === 't' && imdbId[1] === 't') {
 		req.imdbId = imdbId; 
 		next();
+	} else {
+		res.redirect('/');
 	}
-});
 
-app.param('txt', function(req, res, next, txt) {
-	req.txt = txt;
-	next();
 });
-
-app.locals.languages = {'English': 'en', 'Norwegian': 'no', 'Spanish': 'es', 'Chinese': 'ch', 'Japanese': 'jp', 'Swedish': 'swe', 'Danish': 'dk' }
 
 app.get('/', function (req, res) {
 	res.render('index')
@@ -90,22 +84,12 @@ app.get('/movie/:imdbId', function (req, res) {
 				} else {
 					var auth = token.access_token;
 					res.cookie('token', auth, { maxAge: 600000, httpOnly: false })
-					res.render('movie', {movie: data, langs: app.locals.languages});
+					res.render('movie', {movie: data});
 				};
 			});
 		}
 	});
 })
-
-app.get('/translate/:txt', function (req, res) {
-	var txt = req.params.txt.split('+').join(' ');
-	func.getTranslatorToken(function (err, token) {
-		func.translate(token, txt, 'en', 'no', function (err, data) {
-			res.send(data);
-		});
-	});
-	
-});
 
 app.get('*',function (req, res) {
 	res.redirect('/');

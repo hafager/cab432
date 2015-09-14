@@ -43,12 +43,10 @@ app.post('/', function (req, res) {
 	var movieSearch = req.body.movieSearch;
 	var selectedLanguage = req.body.selectLanguage;
 	
-	try { var year = req.body.year } catch (error) { var year = null};
-
 	var sync = require("./gensync");
 	sync(function*(resume) {
 		try {
-			var movieList = yield func.searchMovie(movieSearch, year, resume);
+			var movieList = yield func.searchMovie(movieSearch, resume);
 
 		} catch (error) {
 			console.error(error.stack);

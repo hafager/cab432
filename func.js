@@ -1,55 +1,6 @@
 var request = require('request');
 var xmlParseString = require('xml2js').parseString;
 
-
-/**
-* Queries the API "http://ip-api.com/json/#" for location of the client from IP
-* Example: "http://ip-api.com/json/#131.181.251.131"
-* @params {object} location - A location
-*/
-exports.getLocationFromIP = function (ip, callback) {
-	var url = 'http://ip-api.com/json/#';
-
-	request( url + ip, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-    	try {
-        	body = JSON.parse(body);
-		} catch (error) {
-			callback(Error("Response body is not valid JSON: " + body), null);
-        	return;
-		}
-		callback(null, body);
-    } else {
-    	callback(Error(body.message), body);
-    }
-  });
-}
-
-/**
-* Queries the API "http://api.wunderground.com/api/4b52aa55f2243ff8/conditions/q/" for information about the weather at the location
-* Example: "https://www.omdbapi.com/?t=death+proof&y=&plot=long&r=json&type=movie"
-* @params {object} location - A location
-*/
-exports.getWeatherForLocation = function (location, callback) {
-	var country_code = location.countryCode;
-	var city = location.city;
-	var url = 'http://api.wunderground.com/api/4b52aa55f2243ff8/conditions/q/';
-
-	request( url + country_code + '/' + city + '.json', function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			try {
-        		body = JSON.parse(body);
-			} catch (error) {
-				callback(Error("Response body is not valid JSON: " + body), null);
-			return;
-			}
-			callback(null, body);
-		} else {
-			callback(Error(body.message), body);
-		}
-	});
-}
-
 /**
 * Queries the API https://www.omdbapi.com/ for information about the provided movie
 * Example: "https://www.omdbapi.com/?t=death+proof&y=&plot=long&r=json&type=movie"
@@ -67,7 +18,7 @@ exports.getMovieInfo = function (movieId, callback) {
 	var movie = 'i=' + movieId.split(' ').join('+');
 
 	var preparedUrl = url + format + "&" + plot + "&" + movie;
-	
+	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -86,17 +37,15 @@ exports.getMovieInfo = function (movieId, callback) {
 /**
 * Queries the API https://www.omdbapi.com/ for movies with the keyword(s)
 * @params {string} queryString - The string of the query
-* @params {string} year - Optional. Year of the movie
 */
-exports.searchMovie = function (queryString, year, callback) {
+exports.searchMovie = function (queryString, callback) {
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
 	var type = "type=movie";
-	if (year) { var year = "y=" + year; } else { var year = ""; };
 	var query = 's=' + queryString.split(' ').join('+');
 
-	var preparedUrl = url + format + "&" + query + '&' + type + '&' + year;
-
+	var preparedUrl = url + format + "&" + query + '&' + type;
+	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -110,35 +59,6 @@ exports.searchMovie = function (queryString, year, callback) {
 			callback(Error(body.message), body);
 		}
 	});
-
-}
-
-/**
-* Queries the API https://api.untappd.com/v4/beer/info/ with the beer ID to get info about the beer
-* Examle: https://api.untappd.com/v4/beer/info/467563?client_id=079890CF6A35244916A8774BC0CB33230B852BD5&client_secret=44E33A2D1CD33F5606E362932FAE66F1EEEF697C&compact=true"
-* @params {string} beerId - The string of the query
-*/
-exports.getBeerInfo = function (beerId, callback) {
-	var url = "https://api.untappd.com/v4/beer/info/";
-	var clientId = "client_id=079890CF6A35244916A8774BC0CB33230B852BD5";
-	var clientSecret = "client_secret=44E33A2D1CD33F5606E362932FAE66F1EEEF697C";
-	var compact = "compact=false";
-
-	var preparedUrl = url + beerId + "?" + clientId + "&" + clientSecret + "&" + compact;
-
-	request( preparedUrl, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			try {
-        		body = JSON.parse(body);
-			} catch (error) {
-				callback(Error("Response body is not valid JSON: " + body), null);
-			return;
-			}
-			callback(null, body);
-		} else {
-			callback(Error(body.message), body);
-		}
-	});	
 }
 
 /**
@@ -153,7 +73,7 @@ exports.getSubtitle = function (movie, callback) {
 	var movieQuery = movie.Title.split(' ').join('-');
 
 	var preparedUrl = url + movieQuery + '-' + language + '-' + movie.Year;
-
+	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			xmlParseString(body, function (err, result) {
@@ -180,7 +100,7 @@ exports.classifyText = function (movie, callback) {
 	var text = movie.Plot;
 	var apiUrl = "http://sentiment.vivekn.com/api/text/";
 	var payload = 'txt="' + text + '"';
-
+	console.log(payload);
 	request.post({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
@@ -216,7 +136,7 @@ exports.getTranslatorToken = function (callback) {
 	var grantType = "client_credentials";
 
 	var payload = 'grant_type=' + grantType + '&client_id=' + encodeURIComponent(clientId) + '&client_secret=' + encodeURIComponent(clientSecret) + '&scope=' + scope;
-
+	console.log(payload);
 	request.post({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
@@ -246,7 +166,7 @@ exports.getTranslatorToken = function (callback) {
 exports.translate = function (token, text, from, to, callback) {
 	var uri = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + encodeURIComponent(text) + "&from=" + from + "&to=" + to;
 	var authToken = "Bearer" + " " + token.access_token;
-
+	console.log(url);
 	var options = {
 		url: uri,
 		headers: {

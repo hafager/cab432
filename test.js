@@ -5,7 +5,7 @@ var func = require('./func.js')
 var async = require('async');
 
  
-var testMovies = [{ Title: 'Hollywood Hulk Hogan: Hulk Still Rules',
+var testMovies = [{ Title: 'The Dark Knight',
     Year: '2002',
     Rated: 'N/A',
     Released: 'N/A',
@@ -210,23 +210,54 @@ var translate = function (token, text, from, to, callback) {
 
 var alt = [];
 
-function en(callback) {
-	callback("en");
-}
-function to(callback) {
-	callback("to");
-}
-function tre(callback) {
-	callback("tre");
-}
+// var en function (callback) {
+// 	callback("en");
+// }
+// var to function (callback) {
+// 	callback("to");
+// }
+// var tre function (callback) {
+// 	callback("tre");
+// }
 
-function resultat(err, data) {
-	console.log(data)
-}
+// var resultat function (err, data) {
+// 	console.log(data)
+// }
 
 
+async.parallel([
+  function(callback) {
+    setTimeout(function() {
+      console.log("Task 1");
+      callback(null, 1);
+    }, 500);
+  },
+  function(callback) {
+    setTimeout(function() {
+      console.log('Task 2');
+      callback(null, 2);
+    }, 200);
+  },
+  function(callback) {
+    setTimeout(function() {
+      console.log('Task 3');
+      callback(null, 3);
+    }, 100);
+  }
+], function(error, results) {
+  console.log(results);
+});
 
-async.parallel([en(), to(), tre()], resultat);
+var func = require('./func.js');
+
+
+var movieSearch = testMovies[0].Title;
+var langCode = 'Norwegian';
+testMovies[0].Subtitles = SelectedLanguage = 'Norvegian';
+
+func.getSubtitle(testMovies[0], function (err, data) {
+	console.log(data);
+})
 
 
 

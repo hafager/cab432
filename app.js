@@ -10,7 +10,6 @@ var bodyParser = require("body-parser");
 var async = require('async');
 var morgan = require('morgan');
 
-//app.use(express.static('public'));
 app.use('/static', express.static('public'));
 app.use(morgan('dev'));
 
@@ -37,8 +36,13 @@ app.get('/', function (req, res) {
 	res.render('index')
 })
 
+/**
+* Makes the movie search and queries movieinfo, subtitle and sentiment APPI.
+* @todo Make subtitle- and sentiment API call asynchronous
+*/
 app.post('/', function (req, res) {
 	var movieSearch = req.body.movieSearch;
+	var selectedLanguage = req.body.selectLanguage;
 	
 	try { var year = req.body.year } catch (error) { var year = null};
 
@@ -46,6 +50,7 @@ app.post('/', function (req, res) {
 	sync(function*(resume) {
 		try {
 			var movieList = yield func.searchMovie(movieSearch, year, resume);
+
 		} catch (error) {
 			console.log(error);
 		}
@@ -54,12 +59,20 @@ app.post('/', function (req, res) {
 		} catch (error) {
 			console.log(error)
 		}
+		for (var item in result) {
+			result[item].SelectedLanguage = selectedLanguage;
+		};
 		try {
-			var movies = yield async.map(result, func.classifyText, resume);
+
+			var subtitles = yield async.map(result, func.getSubtitle, resume);
 		} catch (error) {
 			console.log(error);
 		}
-
+		try {
+			var movies = yield async.map(subtitles, func.classifyText, resume);
+		} catch (error) {
+			console.log(error);
+		}
 		res.render('index', { movies: movies });
 	})
 });

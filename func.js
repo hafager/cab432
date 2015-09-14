@@ -62,7 +62,7 @@ exports.getMovieInfo = function (movieId, callback) {
 
 	var url = "https://www.omdbapi.com/?";
 	var format = "r=json";
-	var plot = "plot=long";
+	var plot = "plot=full";
 	var movieId = movieId;
 	var movie = 'i=' + movieId.split(' ').join('+');
 
@@ -144,16 +144,16 @@ exports.getBeerInfo = function (beerId, callback) {
 /**
 * Queries the API http://subsmax.com/api/10/ for subtitles for a movie in the selected language
 * Example: "http://subsmax.com/api/10/the-dark-knight-en"
-* @params {string} movieQuery - The name of the movie
+* @params {object} movie - The movie object
 * @params {string} language - The language, country or language code for the chosen language
 */
-exports.getSubtitle = function (movieQuery, language, callback) {
+exports.getSubtitle = function (movie, callback) {
+	var language = movie.SelectedLanguage;
 	var url = "http://subsmax.com/api/10/";
-	var movie = movieQuery.split(' ').join('-');
+	var movieQuery = movie.Title.split(' ').join('-');
 
-	var preparedUrl = url + movie + '-' + language;
+	var preparedUrl = url + movieQuery + '-' + language + '-' + movie.Year;
 
-	console.log("Searching for subtitles for " + movieQuery + ' in language ' + language);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			xmlParseString(body, function (err, result) {
@@ -161,7 +161,8 @@ exports.getSubtitle = function (movieQuery, language, callback) {
 					callback(Error("Response body is not valid XML: " + body), null);
 					return;
 				} else {
-					callback(null, result);
+					movie.Subtitles = result.SubsMaxAPI.items[0].item
+					callback(null, movie);
 				}
 			});
 		} else {

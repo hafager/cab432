@@ -2,11 +2,6 @@
 	background-image: url("../img/background.jpg");
 	background-color: black;
 
-	-webkit-filter: grayscale(0.3) sepia(0.3);
-	-moz-filter: grayscale(0.3) sepia(0.3);
-	-o-filter: grayscale(0.3) sepia(0.3);
-	-ms-filter: grayscale(0.3) sepia(0.3);
-	filter: grayscale(0.3) sepia(0.3);
 }
 
 .head {
@@ -20,8 +15,10 @@
 	line-height: 200px;
 
 	text-align: center;
+}
 
 .search-field {
+	display: inline-block;
 	width: 50%;
 }
 
@@ -71,4 +68,40 @@
 
 .movie-info {
 	padding-top: 200px;
+}
+
+.red {
+	background: rgba(216, 0, 0, .4);
+}
+
+.yellow {
+	background: rgba(255, 255, 0, .4);
+}
+
+.green {
+	background: rgba(153, 255, 102, .4);
+}
+
+.subtitle-file-dropdown {
+	width: 300px;
+}
+
+.movie-plot {
+	padding-top: 20px;
+}
+
+.film-info {
+	padding-top: 30px;
+	background-color: #FFFFF8;
+	box-shadow: 0 0 20px rgba(0,0,0,1);
+	padding-bottom: 30px;
+	margin-bottom: 50px;
+}
+
+.back {
+	padding-top: 40px;
+}
+
+.subtitle-search-dropdown {
+	padding-top : 8px;
 }

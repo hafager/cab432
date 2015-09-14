@@ -6,20 +6,26 @@ block head
 block body
 	.row
 		.col-md-1
-		.col-md-10
+		.col-md-10.film-info
 			.row
-				.col-md-6.text-center
+				.col-md-5.text-center
 					img(src='#{movie.Poster}', alt='Poster for #{movie.Title}', href='#{movie.Poster}', name='#{movie.Title}')
-				.col-md-6
+				.col-md-7
 					h1= movie.Title
-					h2= 'Rating: ' + movie.imdbRating
-			.row
-				.movie-info
-					select#langDropdown.btn-lg
-						each langCode, lang in langs
-							option(value="#{lang}")= lang
-
-			.row
-				p#plot= movie.Plot
+					a(href='http://www.imdb.com/title/#{movie.imdbID}')
+						h4= 'Rating: ' + movie.imdbRating
+					p <b>Year:</b> #{movie.Year}
+					p <b>Genre:</b> #{movie.Genre}
+					p <b>Awards:</b> #{movie.Awards}
+					p <b>Director:</b> #{movie.Director}
+					p <b>Actors:</b> #{movie.Actors}
+					br
+					br
+					p <b>Plot:</b>
+						#langDropdownDiv
+					p#plot= movie.Plot
+			.row.back.text-center
+				a(href="/")
+					h4 Search for another movie
 
 

@@ -6,16 +6,18 @@ block body
 		br
 	.row
 		if movies
-			table.table
+			table#movieTable.table
 				thead
 					each movie in movies
-						tr
+						tr(class='#{movie.Sentiment.sentiment === "Positive" ? "green" : movie.Sentiment.sentiment === "Negative" ? "red" : "yellow"}')
 							td
-								a(href='movie/#{movie.imdbID}', name='#{movie.imdbID}')= movie.Title
+								a(href='movie/#{movie.imdbID}', name='#{movie.imdbID}')
+									h4= movie.Title
 							td
 								= movie.Sentiment.sentiment
-		if movieId
-			h1 movieId
-		if movieArray
-			h1= movieArray
-			
+							td
+								if movie.Subtitles !== undefined
+									select.btn.subtitle-file-dropdown(onchange='redirectToLink(this.value)')
+										option(value="" disabled selected) -- Select a subtitle --
+										for sub in movie.Subtitles
+											option(value='#{sub.link}')= sub.files_in_archive

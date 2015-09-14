@@ -1,6 +1,11 @@
 div(class="row text-center")
-	form#search-form(class="form-inline", method="post", action="/")
-		input(class="form-control search-field", type='text', placeholder='Find a movie', class='form-control input-lg', name='movieSearch')
-		input(type='checkbox', class='checkbox', value='subtitle', name='subtitle')
-		button(type="submit" class="btn btn-default btn-lg") Search
+	form#search-form(class="form-inline", method="post", action="/", name='form')
+		.row
+			input#movieSearch(class="form-control search-field", type='text', placeholder='Find a movie', class='form-control input-lg', name='movieSearch')
+			button(type="submit", class="btn btn-default btn-lg") Search
+		.row.subtitle-search-dropdown
+			.col-md-6.text-right
+				label(for="subtitle") Subtitle
+			.col-md-6.text-left
+				#subtitleDropdownDiv
 

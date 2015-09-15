@@ -6,19 +6,20 @@ $(document).ready(function() {
 	var cookie = document.cookie;
 	var authToken = cookie.substring(6, cookie.length);
 
+
 	/**
 	* Creates dropdown for language selection for translation of plot
 	*/
 	if ( !($('#langDropdownDiv').length === 0) ) {
 		createDropdown('langDropdownDiv', 'langDropdown', language);
-	}
+	};
 
 	/**
 	* Creates dropdown for language selection for subtitles
 	*/
 	if ( !($('#subtitleDropdownDiv').length === 0) ) {
 		createDropdown('subtitleDropdownDiv', 'subtitleDropdown', language);
-	}
+	};
 
 	/**
 	* Calls the translate API if another language is selected from the plot language drop and updates the text with the translated value.
@@ -32,6 +33,8 @@ $(document).ready(function() {
 
 });
 
+
+
 /**
 * Translates a given text, using the token received from the server
 * @params {string} token - The token received from the server.
@@ -40,7 +43,7 @@ $(document).ready(function() {
 * @params {string} to - The language which the text will be translated into.
 */
 var translate = function (token, text, from, to, callback) {
-	var url = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId=Bearer " + token + "&from=" + from + "&to=" + to + "&text=" + text;
+	var url = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId=Bearer " + token + "&from=" + from + "&to=" + to + "&text=" + encodeURIComponent(text);
 
 	$.ajax({
 		type: 'GET',
@@ -50,7 +53,7 @@ var translate = function (token, text, from, to, callback) {
 			callback('Please refresh this page');
 		},
 		success: function(xml_results) {
-			callback(xml_results);
+			callback(xml_results.replace(/\\"/g, '"'));
 		}
 	});
 };

@@ -105,7 +105,7 @@ exports.classifyText = function (movie, callback) {
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
 		body:    payload
-	}, function(error, response, body){
+	}, function (error, response, body){
 		if (!error && response.statusCode == 200) {
 		try {
         		body = JSON.parse(body);
@@ -141,7 +141,7 @@ exports.getTranslatorToken = function (callback) {
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
 		body:    payload
-	}, function(error, response, body){
+	}, function (error, response, body){
 		if (!error && response.statusCode == 200) {
 			try {
 		    		body = JSON.parse(body);
@@ -189,7 +189,19 @@ exports.translate = function (token, text, from, to, callback) {
 			callback(Error(body.message), body);
 		}
 	});	
-}
+};
+
+exports.requestImage = function (imageId, callback) {
+	var url = 'http://ia.media-imdb.com/images/M/' + imageId;
+
+	request( url, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			callback(null, body);
+		} else {
+			callback(Error(body.message), body);
+		}
+	});
+};
 
 
 

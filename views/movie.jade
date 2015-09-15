@@ -9,7 +9,8 @@ block body
 		.col-md-10.film-info
 			.row
 				.col-md-5.text-center
-					img(src='#{movie.Poster}', alt='Poster for #{movie.Title}', href='#{movie.Poster}', name='#{movie.Title}')
+					if movie.Poster !== 'N/A'
+						img#posterImage(src='http://localhost:3000/img/#{movie.Poster.substr(34)}', alt='Poster for #{movie.Title}', href='http://localhost:3000/img/#{movie.Poster.substr(34)}', name='#{movie.Title}')
 				.col-md-7
 					h1= movie.Title
 					a(href='http://www.imdb.com/title/#{movie.imdbID}')

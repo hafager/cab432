@@ -8,6 +8,11 @@ var request = require('request');
 var func = require('./func.js');
 var bodyParser = require("body-parser");
 var async = require('async');
+var redis = require('redis');
+var requestProxy = require('express-request-proxy');
+var morgan = require('morgan');
+
+require('redis-streams')(redis);
 
 app.use('/static', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -93,12 +98,27 @@ app.get('/movie/:imdbId', function (req, res) {
 				} else {
 					var auth = token.access_token;
 					res.cookie('token', auth, { maxAge: 600000, httpOnly: false })
+					console.log(data);
 					res.render('movie', {movie: data});
 				};
 			});
 		}
 	});
 })
+
+app.get('/img/:imageId', function (req, res) {
+	var imageId = req.params.imageId; // http://ia.media-imdb.com/images/M/MV5BMTQwMTA5MzI1MF5BMl5BanBnXkFtZTcwMzY5Mzg3OA@@._V1_SX300.jpg
+	var image;
+	console.log('http://ia.media-imdb.com/images/M/' + imageId);
+	request.get('http://ia.media-imdb.com/images/M/' + imageId).pipe(res) // request.put('http://mysite.com/img.png')
+	//res.send(image);
+});
+
+app.get('/api/:id', requestProxy({
+    cache: redis,
+    cacheMaxAge: 60,
+    url: "http://ia.media-imdb.com/images/M/:id",
+}));
 
 app.get('*',function (req, res) {
 	res.redirect('/');

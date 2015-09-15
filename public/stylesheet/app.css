@@ -84,3 +84,7 @@
 .subtitle-search-dropdown {
 	padding-top : 8px;
 }
+
+.updated {
+	color: red;
+}

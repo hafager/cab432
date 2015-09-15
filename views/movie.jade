@@ -10,6 +10,11 @@ block body
 			.row
 				.col-md-5.text-center
 					img(src='#{movie.Poster}', alt='Poster for #{movie.Title}', href='#{movie.Poster}', name='#{movie.Title}')
+					.updated
+						p
+							span Go to
+							a(href="http://hafager432.cloudapp.net:4000/")  http://hafager432.cloudapp.net:4000/ 
+							span to see updated version where I have set up a proxy for the image request. (16/09/2015)
 				.col-md-7
 					h1= movie.Title
 					a(href='http://www.imdb.com/title/#{movie.imdbID}')
@@ -27,5 +32,6 @@ block body
 			.row.back.text-center
 				a(href="/")
 					h4 Search for another movie
+
 
 

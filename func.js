@@ -18,7 +18,6 @@ exports.getMovieInfo = function (movieId, callback) {
 	var movie = 'i=' + movieId.split(' ').join('+');
 
 	var preparedUrl = url + format + "&" + plot + "&" + movie;
-	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -45,7 +44,6 @@ exports.searchMovie = function (queryString, callback) {
 	var query = 's=' + queryString.split(' ').join('+');
 
 	var preparedUrl = url + format + "&" + query + '&' + type;
-	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -73,7 +71,6 @@ exports.getSubtitle = function (movie, callback) {
 	var movieQuery = movie.Title.split(' ').join('-');
 
 	var preparedUrl = url + movieQuery + '-' + language + '-' + movie.Year;
-	console.log(preparedUrl);
 	request( preparedUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			xmlParseString(body, function (err, result) {
@@ -100,7 +97,6 @@ exports.classifyText = function (movie, callback) {
 	var text = movie.Plot;
 	var apiUrl = "http://sentiment.vivekn.com/api/text/";
 	var payload = 'txt="' + text + '"';
-	console.log(payload);
 	request.post({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
@@ -136,7 +132,6 @@ exports.getTranslatorToken = function (callback) {
 	var grantType = "client_credentials";
 
 	var payload = 'grant_type=' + grantType + '&client_id=' + encodeURIComponent(clientId) + '&client_secret=' + encodeURIComponent(clientSecret) + '&scope=' + scope;
-	console.log(payload);
 	request.post({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 		url:     apiUrl,
@@ -166,7 +161,6 @@ exports.getTranslatorToken = function (callback) {
 exports.translate = function (token, text, from, to, callback) {
 	var uri = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + encodeURIComponent(text) + "&from=" + from + "&to=" + to;
 	var authToken = "Bearer" + " " + token.access_token;
-	console.log(url);
 	var options = {
 		url: uri,
 		headers: {
@@ -190,20 +184,6 @@ exports.translate = function (token, text, from, to, callback) {
 		}
 	});	
 };
-
-exports.requestImage = function (imageId, callback) {
-	var url = 'http://ia.media-imdb.com/images/M/' + imageId;
-
-	request( url, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			callback(null, body);
-		} else {
-			callback(Error(body.message), body);
-		}
-	});
-};
-
-
 
 
 

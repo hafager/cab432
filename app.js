@@ -94,7 +94,6 @@ app.get('/movie/:imdbId', function (req, res) {
 				} else {
 					var auth = token.access_token;
 					res.cookie('token', auth, { maxAge: 600000, httpOnly: false })
-					console.log(data);
 					res.render('movie', {movie: data});
 				};
 			});

@@ -10,7 +10,7 @@ block body
 			.row
 				.col-md-5.text-center
 					if movie.Poster !== 'N/A'
-						img#posterImage(src='http://hafager432.cloudapp.net:4000/#{movie.Poster.substr(34)}', alt='Poster for #{movie.Title}', href='http://hafager432.cloudapp.net:4000/#{movie.Poster.substr(34)}', name='#{movie.Title}')
+						img#posterImage(src='http://hafager432.cloudapp.net:4000/img/#{movie.Poster.substr(34)}', alt='Poster for #{movie.Title}', href='http://hafager432.cloudapp.net:4000/img/#{movie.Poster.substr(34)}', name='#{movie.Title}')
 				.col-md-7
 					h1= movie.Title
 					a(href='http://www.imdb.com/title/#{movie.imdbID}')
